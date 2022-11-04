@@ -11,70 +11,85 @@ var db = require('./config/connection')
 db.connect((err)=>{
   if(err) console.log(err);
   else console.log('connected to cloud');
-            var oldIssue = null;
-            var balance = 2000;
-            function dataFetch()
-              {
-                var data;
-                requests('https://earnpredict.com/earnservice.php')
-                .on('data',async function (chunk) {
-                data =await JSON.parse(chunk)
-                data = await data.data
+  
 
-                var newIssue = await data[1].issue
-                var result = await data[1].result
-                var fail = await data[1].fail
-                var amount = await (parseFloat(data[1].amount))/10
-                var currAmount =await (parseFloat(data[0].amount))/10
-                var currIssue = await data[0].issue
-                amount = parseFloat(amount)
-              
-
-                console.log(data[0].issue);
-                console.log(data[0].amount);
-                console.log(balance);
-
-
-              
-
-              if(newIssue != oldIssue)
-              {
-                  balance = balance - currAmount
-                  if(result != 'fail')
-                  {
-                      balance = balance + amount*1.9
-                  }
-                  var final={
-                      'previssue':newIssue,
-                      'prevresult':result,
-                      'fail seq':fail,
-                      'current issue':currIssue,
-                      'amount':currAmount,
-                      'balance':balance
-                  }
-                  console.log(final);
-                  db.predictionDb().collection('result').insertOne(final).then(async()=>{
-                  oldIssue = await newIssue;
-                  requests('https://result-app-deepak.herokuapp.com/')
+              var oldIssue = null;
+              var balance = 2000;
+              var maxLevel = 0;
+              function dataFetch()
+                {
+                  var data;
+                  
+                  requests('https://earnpredict.com/earnservice.php')
                   .on('data',async function (chunk) {
-                    console.log(chunk);
-                  })
-
-
-
-                  dataFetch()
-                  })
-              }
-              else
-              {
-                  dataFetch()
-              }
-              
-
-              })
-              }
-
-      dataFetch()
+                  data =await JSON.parse(chunk)
+                  data = await data.data
+  
+                  var newIssue = await data[1].issue
+                  var result = await data[1].result
+                  var failSequence = await parseInt(data[1].fail)
+                  var prevAmount = await ((parseFloat(data[1].amount))/10).toFixed(2);
+                  var currAmount =await ((parseFloat(data[0].amount))/10).toFixed(2);
+                  var currIssue = await data[0].issue
+                  var currentPredict = await data[0].predict
+                  var previousPredict = await data[1].predict
+                  prevAmount = parseFloat(prevAmount)
+                
+  
+                  console.log(data[0].issue);
+                  console.log(data[0].predict);
+                  console.log(balance);
+  
+  
+                
+  
+                if(newIssue != oldIssue)
+                {
+                    balance = balance - currAmount
+                  
+                    if(result != 'fail')
+                    {
+                        balance = balance + prevAmount*1.9
+                        
+                    }
+                    
+                    if(failSequence > maxLevel){
+                      maxLevel = failSequence;
+                    }
+                    var final={
+                        'Previous Issue ':newIssue,
+                        'Previuos Bet   ':(previousPredict == '0' ? 'Even' : 'Odd'),
+                        'Pevious Result':result,
+                        'Fail Sequence  ':failSequence,
+                        'Current Issue  ':currIssue,
+                        'Current Bet Amt':currAmount,
+                        'Current Bet    ': (currentPredict == '0' ? 'Even' : 'Odd'),
+                        'Current Balance':balance,
+                        'Max Level Today':parseInt(maxLevel)+1
+                    }
+                    console.log(final);
+                    db.predictionDb().collection('result').insertOne(final).then(async()=>{
+                    oldIssue = await newIssue;
+                    requests('https://result-app-deepak.herokuapp.com/')
+                    .on('data',async function (chunk) {
+                      console.log(chunk);
+                    })
+  
+  
+  
+                    dataFetch()
+                    })
+                }
+                else
+                {
+                    dataFetch()
+                }
+                
+  
+                })
+                }
+  
+        dataFetch()
 })
 
 var indexRouter = require('./routes/index');
