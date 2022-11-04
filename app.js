@@ -13,7 +13,7 @@ db.connect((err)=>{
   else console.log('connected to cloud');
   
               var oldIssue = null;
-              var balance = 2000;
+              var balance = 2137;
               var maxLevel = 0;
               function dataFetch()
                 {
