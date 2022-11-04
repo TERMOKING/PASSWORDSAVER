@@ -12,7 +12,6 @@ db.connect((err)=>{
   if(err) console.log(err);
   else console.log('connected to cloud');
   
-
               var oldIssue = null;
               var balance = 2000;
               var maxLevel = 0;
@@ -35,14 +34,10 @@ db.connect((err)=>{
                   var previousPredict = await data[1].predict
                   prevAmount = parseFloat(prevAmount)
                 
-  
                   console.log(data[0].issue);
                   console.log(data[0].predict);
                   console.log(balance);
-  
-  
-                
-  
+
                 if(newIssue != oldIssue)
                 {
                     balance = balance - currAmount
@@ -68,15 +63,15 @@ db.connect((err)=>{
                         'Max Level Today':parseInt(maxLevel)+1
                     }
                     console.log(final);
+
                     db.predictionDb().collection('result').insertOne(final).then(async()=>{
                     oldIssue = await newIssue;
-                    requests('https://result-app-deepak.herokuapp.com/')
-                    .on('data',async function (chunk) {
-                      console.log(chunk);
-                    })
-  
-  
-  
+
+                        requests('https://result-app-deepak.herokuapp.com/')
+                        .on('data',async function (chunk) {
+                          console.log(chunk);
+                        })
+
                     dataFetch()
                     })
                 }
@@ -84,11 +79,8 @@ db.connect((err)=>{
                 {
                     dataFetch()
                 }
-                
-  
                 })
                 }
-  
         dataFetch()
 })
 
