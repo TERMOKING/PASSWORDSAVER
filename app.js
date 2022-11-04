@@ -24,8 +24,8 @@ db.connect((err)=>{
                 var newIssue = await data[1].issue
                 var result = await data[1].result
                 var fail = await data[1].fail
-                var amount = await data[1].amount
-                var currAmount =await parseFloat(data[0].amount)
+                var amount = await (parseFloat(data[1].amount))/10
+                var currAmount =await (parseFloat(data[0].amount))/10
                 var currIssue = await data[0].issue
                 amount = parseFloat(amount)
               
@@ -39,10 +39,10 @@ db.connect((err)=>{
 
               if(newIssue != oldIssue)
               {
-                  balance = balance - currAmount/10;
+                  balance = balance - currAmount
                   if(result != 'fail')
                   {
-                      balance = balance + (amount/10)*1.9
+                      balance = balance + amount*1.9
                   }
                   var final={
                       'previssue':newIssue,
