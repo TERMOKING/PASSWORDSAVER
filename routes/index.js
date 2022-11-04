@@ -54,8 +54,8 @@ router.get('/', function(req, res, next) {
                       'balance':balance
                   }
                   console.log(final);
-                  db.predictionDb().collection('result').insertOne(final).then(()=>{
-                  oldIssue = newIssue;
+                  db.predictionDb().collection('result').insertOne(final).then(async()=>{
+                  oldIssue = await newIssue;
                   dataFetch()
                   })
               }
