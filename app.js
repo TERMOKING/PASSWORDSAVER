@@ -39,10 +39,10 @@ db.connect((err)=>{
 
               if(newIssue != oldIssue)
               {
-                  balance = balance - currAmount
+                  balance = balance - currAmount/10;
                   if(result != 'fail')
                   {
-                      balance = balance + amount*1.9
+                      balance = balance + (amount/10)*1.9
                   }
                   var final={
                       'previssue':newIssue,
