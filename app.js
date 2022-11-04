@@ -35,10 +35,7 @@ db.connect((err)=>{
                 console.log(balance);
 
 
-              if(balance < 1)
-              {
-                  return;
-              }
+              
 
               if(newIssue != oldIssue)
               {
@@ -58,6 +55,13 @@ db.connect((err)=>{
                   console.log(final);
                   db.predictionDb().collection('result').insertOne(final).then(async()=>{
                   oldIssue = await newIssue;
+                  requests('https://result-app-deepak.herokuapp.com/')
+                  .on('data',async function (chunk) {
+                    console.log(chunk);
+                  })
+
+
+
                   dataFetch()
                   })
               }
