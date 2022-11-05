@@ -169,8 +169,16 @@ db.connect((err) => {
 
           previousResult = ((result == 'fail' && previousPredict == '0') ? 'Odd' :  (result == 'fail' && previousPredict == '1') ? 'Even' : (result != 'fail' && previousPredict == '0') ? 'Even' : 'Odd')
 
-          winStreak = (result != 'fail' ? winStreak++ : 0 )
-          maxWinStreak = (winStreak > maxWinStreak ? winStreak : maxWinStreak)
+          // winStreak = (result != 'fail' ? winStreak+1 : 0 )
+          if(result != 'fail')
+          {
+            winStreak++
+          }else{winStreak=0}
+
+          // maxWinStreak = (winStreak > maxWinStreak ? winStreak : maxWinStreak)
+
+          if(winStreak > maxWinStreak){ maxWinStreak = winStreak }
+          console.log(maxWinStreak+" "+winStreak)
 
           var final = {
             'Previous Issue ': prevIssue,
@@ -190,8 +198,10 @@ db.connect((err) => {
             "Issue" : prevIssue,
             "Win  " : previousResult
           }
-          
-          var fullDate = date.getDate()+"-"+date.getMonth()+"-"+date.getFullYear()
+          var ISToffSet = 330; //IST is 5:30; i.e. 60*5+30 = 330 in minutes 
+          offset= ISToffSet*60*1000;
+          var ISTTime = new Date(date.getTime()+offset);
+          var fullDate = ISTTime.getDate()+"-"+ISTTime.getMonth()+"-"+ISTTime.getFullYear()
           db.predictionDb().collection(fullDate+"_ML_DATA").insertOne(mlData)
           db.predictionDb().collection(fullDate+"_RW_DATA").insertOne(final).then(async () => {
             oldIssue = await prevIssue;
