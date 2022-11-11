@@ -98,9 +98,7 @@ db.connect((err) => {
           db.predictionDb().collection(fullDate+"_ML_DATA").insertOne(mlData)
           db.predictionDb().collection(fullDate+"_RW_DATA").insertOne(final).then(async () => {
             oldIssue = await prevIssue;
-            requests('https://result-app-deepak.herokuapp.com/')
-              .on('data', async function (chunk) {
-              })
+           
             dataFetch()
           })
         }
